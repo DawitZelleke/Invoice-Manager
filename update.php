@@ -1,35 +1,52 @@
 <?php
 session_start();
+require 'data.php';
 
-$errors = $_SESSION['add_errors'] ?? [];
-$old = $_SESSION['add_old'] ?? [
-    'client' => '',
-    'email' => '',
-    'amount' => '',
-    'status' => ''
-];
+if (!isset($_SESSION['invoices'])) {
+    $_SESSION['invoices'] = $invoices;
+}
 
-unset($_SESSION['add_errors'], $_SESSION['add_old']);
+$number = $_GET['number'] ?? $_POST['number'] ?? null;
+$invoice = null;
+
+foreach ($_SESSION['invoices'] as $item) {
+    if ($item['number'] == $number) {
+        $invoice = $item;
+        break;
+    }
+}
+
+if (!$invoice) {
+    header('Location: index.php');
+    exit;
+}
+
+$errors = $_SESSION['update_errors'] ?? [];
+$old = $_SESSION['update_old'] ?? $invoice;
+
+unset($_SESSION['update_errors'], $_SESSION['update_old']);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Add Invoice</title>
+    <title>Update Invoice</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-    <h1>Add Invoice</h1>
+    <h1>Update Invoice #<?= htmlspecialchars($number) ?></h1>
     <nav>
         <a href="index.php">Home</a>
     </nav>
 </header>
 
 <main>
-    <form class="invoice-form" method="POST" action="process_add.php">
+    <form class="invoice-form" method="POST" action="process_update.php">
+        <input type="hidden" name="number" value="<?= htmlspecialchars($number) ?>">
+
         <label>Client Name</label>
         <input type="text" name="client" value="<?= htmlspecialchars($old['client']) ?>">
         <?php if (isset($errors['client'])): ?>
@@ -50,7 +67,6 @@ unset($_SESSION['add_errors'], $_SESSION['add_old']);
 
         <label>Invoice Status</label>
         <select name="status">
-            <option value="">Select status</option>
             <option value="draft" <?= $old['status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
             <option value="pending" <?= $old['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
             <option value="paid" <?= $old['status'] === 'paid' ? 'selected' : '' ?>>Paid</option>
@@ -59,7 +75,7 @@ unset($_SESSION['add_errors'], $_SESSION['add_old']);
             <p class="error"><?= htmlspecialchars($errors['status']) ?></p>
         <?php endif; ?>
 
-        <button type="submit">Add Invoice</button>
+        <button type="submit">Update Invoice</button>
     </form>
 </main>
 

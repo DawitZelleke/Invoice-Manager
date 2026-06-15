@@ -1,34 +1,26 @@
-# Invoice Manager Part 2
+# Invoice Manager Part 3
 - Name: Dawit Zelleke
 - Student Number: 041177199
 - Section Number: CST8257
 
 
 
-# Invoice Manager Part 2
+# # Invoice Manager - Part 3 Observations
 
-## Observation Questions
+## What challenges did you face getting GitHub Copilot to properly incorporate form validation? How did GitHub Copilot validation code differ from what was taught in class?
 
-### What challenges did you have refactoring the project using GitHub Copilot? What extra instructions or context did you need to provide?
+One challenge I faced was making sure GitHub Copilot validated every field exactly the way the assignment required. Sometimes Copilot gave general validation, but it did not always check the specific rules, such as only allowing letters and spaces for the client name. The validation code also had to redirect the user back to the form and keep the old form data, which required sessions.
 
-One challenge I had was changing the project from using separate pages to using one `index.php` page. At first, it was easier to understand the project when there was one page for draft invoices, one page for pending invoices, and one page for paid invoices. I had to make sure the status came from the URL using `$_GET`.
+The validation code from GitHub Copilot was sometimes different from what was taught in class because it tried to use shortcuts or different helper functions. In class, the validation was more step-by-step and easier to follow. I had to adjust the code so that it matched the assignment instructions and still made sense to me.
 
-I needed to give GitHub Copilot extra instructions about using the query string. For example, I had to explain that links like `index.php?status=draft` should show only draft invoices. I also had to make sure it understood that the old `draft.php`, `pending.php`, and `paid.php` files were no longer needed.
+## Did GitHub Copilot use any code that you didn't understand or made any changes that you didn't like? If so, explain. What did/would you do if there was generated code that you didn't understand?
 
-Another challenge was using sessions to keep the new invoices saved. The invoices would reset if they were only added to the normal array. Using `$_SESSION` fixed that problem because it keeps the invoices during the user's session.
+GitHub Copilot sometimes suggested code that was more complicated than needed. For example, it sometimes used functions or patterns that worked, but were not as clear as the examples taught in class. I did not want to include code that I could not explain, because I need to understand what each part of the project does.
 
-### In PHP, what does the term "superglobals" mean and how do those variables differ from other variables. Provide a list of "superglobals" and when to use them?
+If Copilot generated code that I did not understand, I would break it into smaller parts and test each section. I would also compare it to class examples and rewrite it in a simpler way if needed. My goal would be to keep the code readable and make sure I can explain how the validation, sessions, update, and delete features work.
 
-In PHP, superglobals are special built-in variables that are always available. They can be used from anywhere in the PHP file, even inside functions. This makes them different from regular variables because regular variables usually only work in the place where they were created.
+## What changes would you make to the quality of your code? How would you prompt GitHub Copilot to make those changes?
 
-Common PHP superglobals include `$_GET`, `$_POST`, `$_SESSION`, `$_SERVER`, `$_COOKIE`, `$_FILES`, `$_REQUEST`, `$_ENV`, and `$GLOBALS`. `$_GET` is used when information is sent through the URL. `$_POST` is used when a form sends data after being submitted.
+One change I would make to improve the code quality is to reduce repeated validation code. The add form and update form use similar validation rules, so it would be better to move the validation into a reusable function. This would make the project cleaner and easier to maintain.
 
-`$_SESSION` is used when information needs to stay available while the user is using the website. `$_SERVER` gives information about the server and request. `$_FILES` is used when users upload files through a form.
-
-### What improvements or changes would you make to the project either in additional features or improvement in the existing code?
-
-One improvement I would make is adding form validation. Right now, the form uses basic HTML required fields, but stronger PHP validation would be better. This would make sure users enter a real email, a proper amount, and a correct invoice status.
-
-Another improvement would be adding edit and delete features. This would let the user fix invoice information or remove invoices they no longer need. It would make the project feel more like a complete invoice manager.
-
-I would also improve the code by moving repeated code into separate files. For example, the header, navigation, and invoice functions could be placed in their own files. This would make the project cleaner and easier to update later.
+I would prompt GitHub Copilot by saying, "Refactor this PHP invoice project so the validation logic is placed in reusable functions, but keep the code simple and beginner friendly." I would also ask Copilot to add comments only where they are useful. This would help improve the code without making it too complicated.
