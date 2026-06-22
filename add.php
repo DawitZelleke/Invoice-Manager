@@ -1,67 +1,44 @@
 <?php
-session_start();
+require_once 'database.php';
+require_once 'validation.php';
 
-$errors = $_SESSION['add_errors'] ?? [];
-$old = $_SESSION['add_old'] ?? [
+$errors = [];
+
+$data = [
+    'number' => '',
     'client' => '',
     'email' => '',
     'amount' => '',
-    'status' => ''
+    'status' => 'draft'
 ];
 
-unset($_SESSION['add_errors'], $_SESSION['add_old']);
-?>
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $data = $_POST;
+    $errors = validateInvoice($data);
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Invoice</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    if (trim($data['number'] ?? '') === '') {
+        $errors['number'] = 'Invoice number is required.';
+    }
 
-<header>
-    <h1>Add Invoice</h1>
-    <nav>
-        <a href="index.php">Home</a>
-    </nav>
-</header>
+    if (empty($errors)) {
+        $pdo = getDatabaseConnection();
 
-<main>
-    <form class="invoice-form" method="POST" action="process_add.php">
-        <label>Client Name</label>
-        <input type="text" name="client" value="<?= htmlspecialchars($old['client']) ?>">
-        <?php if (isset($errors['client'])): ?>
-            <p class="error"><?= htmlspecialchars($errors['client']) ?></p>
-        <?php endif; ?>
+        $stmt = $pdo->prepare(
+            'INSERT INTO invoices (number, client, email, amount, status)
+             VALUES (:number, :client, :email, :amount, :status)'
+        );
 
-        <label>Client Email</label>
-        <input type="text" name="email" value="<?= htmlspecialchars($old['email']) ?>">
-        <?php if (isset($errors['email'])): ?>
-            <p class="error"><?= htmlspecialchars($errors['email']) ?></p>
-        <?php endif; ?>
+        $stmt->execute([
+            'number' => trim($data['number']),
+            'client' => trim($data['client']),
+            'email' => trim($data['email']),
+            'amount' => (int)$data['amount'],
+            'status' => $data['status']
+        ]);
 
-        <label>Invoice Amount</label>
-        <input type="text" name="amount" value="<?= htmlspecialchars($old['amount']) ?>">
-        <?php if (isset($errors['amount'])): ?>
-            <p class="error"><?= htmlspecialchars($errors['amount']) ?></p>
-        <?php endif; ?>
+        header('Location: index.php');
+        exit;
+    }
+}
 
-        <label>Invoice Status</label>
-        <select name="status">
-            <option value="">Select status</option>
-            <option value="draft" <?= $old['status'] === 'draft' ? 'selected' : '' ?>>Draft</option>
-            <option value="pending" <?= $old['status'] === 'pending' ? 'selected' : '' ?>>Pending</option>
-            <option value="paid" <?= $old['status'] === 'paid' ? 'selected' : '' ?>>Paid</option>
-        </select>
-        <?php if (isset($errors['status'])): ?>
-            <p class="error"><?= htmlspecialchars($errors['status']) ?></p>
-        <?php endif; ?>
-
-        <button type="submit">Add Invoice</button>
-    </form>
-</main>
-
-</body>
-</html>
+include 'form.php';
