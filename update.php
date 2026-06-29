@@ -17,6 +17,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = $_POST;
     $errors = validateInvoice($data);
 
+    if (!empty($_FILES['invoice_pdf']['name'])) {
+
+        if ($_FILES['invoice_pdf']['type'] !== 'application/pdf') {
+            $errors['invoice_pdf'] = 'Only PDF files are allowed.';
+        }
+
+    }
+
     if (empty($errors)) {
         $stmt = $pdo->prepare(
             'UPDATE invoices
@@ -34,6 +42,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status' => $data['status'],
             'number' => $number
         ]);
+
+    $documentsDirectory = __DIR__ . '/documents';
+
+    if (!is_dir($documentsDirectory)) {
+        mkdir($documentsDirectory);
+    }
+
+    if (!empty($_FILES['invoice_pdf']['name'])) {
+
+        move_uploaded_file(
+            $_FILES['invoice_pdf']['tmp_name'],
+            $documentsDirectory . '/' . $number . '.pdf'
+        );
+
+    }
 
         header('Location: index.php');
         exit;

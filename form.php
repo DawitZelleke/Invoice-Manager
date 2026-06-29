@@ -9,7 +9,7 @@
 <main class="container">
     <h1><?= empty($data['number']) ? 'Add Invoice' : 'Update Invoice' ?></h1>
 
-    <form method="post" class="invoice-form">
+    <form method="post" enctype="multipart/form-data" class="invoice-form">
         <label>
             Invoice Number
             <input 
@@ -49,6 +49,14 @@
                 <?php endforeach; ?>
             </select>
             <span><?= $errors['status'] ?? '' ?></span>
+        </label>
+        <label>
+            Invoice PDF
+            <input
+                type="file"
+                name="invoice_pdf"
+                accept="application/pdf">
+            <span><?= $errors['invoice_pdf'] ?? '' ?></span>
         </label>
 
         <button type="submit">Save Invoice</button>

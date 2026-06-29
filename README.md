@@ -1,14 +1,18 @@
-# Invoice Manager Part 4
+# Invoice Manager Part 5
 - Name: Dawit Zelleke
 - Student Number: 041177199
 - Section Number: CST8257
 
 
 
-## Part 4 Observations
+## 1. What new feature did you incorporate into the Invoice Manager application? What other changes would you make to the project? Explain why.
 
-Beyond incorporating the invoice_manager.sqlite database, I refactored the project so it no longer uses the old invoices array or sessions. I created a separate database.php file so the PDO connection can be reused in different pages. I also created a validation.php file so the add and update forms can share the same validation rules. This made the project cleaner and easier to maintain.
+The new feature I added to the Invoice Manager application was PDF invoice uploads. Users can now attach a PDF file when creating an invoice, making it easier to keep the invoice document together with its information. If I continued working on the project, I would add a search feature and the ability to sort invoices by client, status, or date because it would make managing a large number of invoices much easier.
 
-GitHub Copilot helped with writing the PDO code, but it needed clear instructions. At first, it sometimes guessed different column names, so I had to give it the correct fields: number, client, email, amount, and status. The main challenge was making sure the site used prepared statements and did not continue using sessions or the old array. I had to prompt Copilot to use the SQLite database for create, read, update, and delete actions.
+## 2. How did your use of GitHub Copilot change throughout the project? Are you more likely or less likely to use GitHub Copilot or any GenAI for coding assistance in the future? Explain why.
 
-If I had to refactor the project to use PostgreSQL instead of SQLite, I would give Copilot a detailed prompt. I would say: “Refactor this PHP Invoice Manager from SQLite to PostgreSQL. Create a PostgreSQL invoices table using the same fields from the SQLite database: number, client, email, amount, and status. Update the PDO connection string for PostgreSQL, keep the same validation rules, and make sure create, read, update, and delete still work with prepared statements.” This would help Copilot understand both the database change and the project requirements.
+At the beginning of the project, I used GitHub Copilot mostly to generate code and help me understand new concepts. As I became more familiar with the project, I used it more to speed up repetitive tasks and check for mistakes instead of relying on it for everything. I am more likely to use GitHub Copilot and other GenAI tools in the future because they save time, but I also learned that it is important to review and test the code before using it.
+
+## 3. What have you learned from completing the Invoice Manager application? How will those skills help you in the future?
+
+Completing this project helped me learn more about using PHP with a database, handling form validation, uploading files, and organizing code into separate files. I also gained more experience using Git branches, commits, and GitHub to manage different parts of the project. These skills will help me build larger web applications in the future and prepare me for software development work where version control and database-driven applications are commonly used.

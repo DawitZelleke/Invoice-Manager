@@ -4,12 +4,71 @@ require_once 'database.php';
 $pdo = getDatabaseConnection();
 
 $status = $_GET['status'] ?? 'all';
+$search = trim($_GET['search'] ?? '');
 
-if (in_array($status, ['draft', 'pending', 'paid'], true)) {
-    $stmt = $pdo->prepare('SELECT * FROM invoices WHERE status = :status ORDER BY number');
-    $stmt->execute(['status' => $status]);
+if ($status === 'all') {
+
+    if ($search === '') {
+
+        $stmt = $pdo->query("
+            SELECT *
+            FROM invoices
+            ORDER BY number
+        ");
+
+    } else {
+
+        $stmt = $pdo->prepare("
+            SELECT *
+            FROM invoices
+            WHERE number LIKE :search
+               OR client LIKE :search
+               OR email LIKE :search
+            ORDER BY number
+        ");
+
+        $stmt->execute([
+            'search' => "%$search%"
+        ]);
+
+    }
+
 } else {
-    $stmt = $pdo->query('SELECT * FROM invoices ORDER BY number');
+
+    if ($search === '') {
+
+        $stmt = $pdo->prepare("
+            SELECT *
+            FROM invoices
+            WHERE status=:status
+            ORDER BY number
+        ");
+
+        $stmt->execute([
+            'status'=>$status
+        ]);
+
+    } else {
+
+        $stmt = $pdo->prepare("
+            SELECT *
+            FROM invoices
+            WHERE status=:status
+            AND (
+                number LIKE :search
+                OR client LIKE :search
+                OR email LIKE :search
+            )
+            ORDER BY number
+        ");
+
+        $stmt->execute([
+            'status'=>$status,
+            'search'=>"%$search%"
+        ]);
+
+    }
+
 }
 
 $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -34,6 +93,23 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <a href="add.php">Add Invoice</a>
     </nav>
 
+    <form method="get">
+        <input
+            type="text"
+            name="search"
+            placeholder="Search invoices..."
+            value="<?= htmlspecialchars($search) ?>">
+
+        <input
+            type="hidden"
+            name="status"
+            value="<?= htmlspecialchars($status) ?>">
+
+        <button type="submit">
+            Search
+        </button>
+    </form>
+
     <section class="invoice-grid">
         <?php foreach ($invoices as $invoice): ?>
             <article class="invoice-card">
@@ -42,7 +118,15 @@ $invoices = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <p><strong>Email:</strong> <?= htmlspecialchars($invoice['email']) ?></p>
                 <p><strong>Amount:</strong> $<?= htmlspecialchars($invoice['amount']) ?></p>
                 <p><strong>Status:</strong> <?= htmlspecialchars($invoice['status']) ?></p>
+                <?php
+                $pdf = 'documents/' . $invoice['number'] . '.pdf';
 
+                if (file_exists($pdf)):
+                ?>
+                <a href="<?= $pdf ?>" target="_blank">
+                    View PDF
+                </a>
+                <?php endif; ?>
                 <div class="actions">
                     <a href="update.php?number=<?= urlencode($invoice['number']) ?>">Edit</a>
 
